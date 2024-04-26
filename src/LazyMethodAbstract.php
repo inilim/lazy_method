@@ -30,7 +30,7 @@ abstract class LazyMethodAbstract
         $class = static::NAMESPACE . '\\' . \ucfirst($name);
 
         if (!\class_exists($class) && !method_exists($class, '__invoke')) {
-            throw new \RuntimeException('Call to undefined method "' . $name . '"');
+            throw new \RuntimeException('Call to undefined method ' . static::NAMESPACE . '::' . $name);
         } elseif (isset(self::$instance[$class])) {
             return self::getInstance($class)->__invoke(...$arguments);
         }
