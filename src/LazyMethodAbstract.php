@@ -4,6 +4,7 @@ namespace Inilim\LazyMethod;
 
 abstract class LazyMethodAbstract
 {
+    protected const NAMESPACE = '';
     /**
      * @var object[]|array{}
      */
@@ -26,7 +27,7 @@ abstract class LazyMethodAbstract
      */
     public static function __callStatic($name, $arguments)
     {
-        $class = __NAMESPACE__ . '\Method\\' . \ucfirst($name);
+        $class = static::NAMESPACE . '\\' . \ucfirst($name);
 
         if (!\class_exists($class) && !method_exists($class, '__invoke')) {
             throw new \RuntimeException('Call to undefined method "' . $name . '"');
