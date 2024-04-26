@@ -1,0 +1,24 @@
+{
+    "name": "inilim/lazy_method",
+    "description": "lazy_method",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "Inilim\\LazyMethod\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "inilim"
+        }
+    ],
+    "require": {
+        "php": "^8.2"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "phpstan/phpstan": "@stable"
+    }
+}
