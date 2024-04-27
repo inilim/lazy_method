@@ -5,6 +5,7 @@ namespace Inilim\LazyMethod;
 abstract class LazyMethodAbstract
 {
     protected const NAMESPACE = '';
+    protected const ALIAS     = [];
     /**
      * @var object[]|array{}
      */
@@ -27,7 +28,7 @@ abstract class LazyMethodAbstract
      */
     public static function __callStatic($name, $arguments)
     {
-        $class = static::NAMESPACE . '\\' . \ucfirst($name);
+        $class = static::NAMESPACE . '\\' . (static::ALIAS[$name] ?? \ucfirst($name));
 
         if (isset(self::$instance[$class])) {
             return self::getInstance($class)->__invoke(...$arguments);
