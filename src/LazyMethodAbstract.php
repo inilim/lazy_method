@@ -12,6 +12,7 @@ abstract class LazyMethodAbstract
     private static $instance = [];
 
     /**
+     * @internal desc
      * @param string $name
      * @param mixed[]|array{} $arguments
      * @return mixed|void
@@ -22,6 +23,7 @@ abstract class LazyMethodAbstract
     }
 
     /**
+     * @internal desc
      * @param string $name
      * @param mixed[]|array{} $arguments
      * @return mixed|void
