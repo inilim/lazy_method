@@ -9,12 +9,12 @@ abstract class LazyMethodAbstract
     /**
      * @var object[]|array{}
      */
-    protected static $instance = [];
+    private static $instance = [];
 
     /**
      * @param string $name
      * @param mixed[]|array{} $arguments
-     * @return mixed
+     * @return mixed|void
      */
     public function __call($name, $arguments)
     {
@@ -32,7 +32,7 @@ abstract class LazyMethodAbstract
 
         if (isset(self::$instance[$class])) {
             return self::getInstance($class)->__invoke(...$arguments);
-        } elseif (!\class_exists($class) && !method_exists($class, '__invoke')) {
+        } elseif (!\class_exists($class) && !\method_exists($class, '__invoke')) {
             throw new \RuntimeException('Call to undefined method ' . static::NAMESPACE . '::' . $name);
         }
 
@@ -42,7 +42,7 @@ abstract class LazyMethodAbstract
     /**
      * @param class-string $class
      */
-    protected static function getInstance($class): object
+    private static function getInstance($class): object
     {
         return self::$instance[$class] ??= new $class;
     }
