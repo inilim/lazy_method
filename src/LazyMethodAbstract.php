@@ -8,6 +8,8 @@ abstract class LazyMethodAbstract
     protected const PATH_TO_DIR = '';
     protected const ALIAS       = [];
 
+    protected string $exists = '';
+
     /**
      * @internal desc
      * @param string $name
@@ -29,7 +31,8 @@ abstract class LazyMethodAbstract
     {
         $n = static::ALIAS[$name] ?? $name;
         $fn = static::NAMESPACE . '\\' . $n;
-        if (\function_exists($fn)) {
+
+        if (\str_contains(self::$exists . '|', '|' . $n . '|')) {
             return $fn(...$arguments);
         }
 
@@ -39,6 +42,7 @@ abstract class LazyMethodAbstract
             require_once $file;
 
             if (\function_exists($fn)) {
+                self::$exists .= '|' . $n;
                 return $fn(...$arguments);
             }
         }
