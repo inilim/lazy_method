@@ -8,7 +8,7 @@ abstract class LazyMethodAbstract
     protected const PATH_TO_DIR = '';
     protected const ALIAS       = [];
 
-    protected string $exists = '';
+    protected static string $exists = '';
 
     /**
      * @internal desc
