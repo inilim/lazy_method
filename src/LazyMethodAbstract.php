@@ -9,9 +9,9 @@ abstract class LazyMethodAbstract
         ALIAS                   = [];
 
     /**
-     * @var string
+     * @var array<string,string>
      */
-    protected static $exists = '';
+    protected static $exists = [];
 
     /**
      * @internal desc
@@ -34,8 +34,9 @@ abstract class LazyMethodAbstract
     {
         $n = static::ALIAS[$name] ?? $name;
         $fn = static::NAMESPACE . '\\' . $n;
+        self::$exists[static::NAMESPACE] ??= '';
 
-        if (\strpos(self::$exists . '|', '|' . $n . '|') !== false) {
+        if (\strpos(self::$exists[static::NAMESPACE] . '|', '|' . $n . '|') !== false) {
             return $fn(...$args);
         }
 
@@ -45,7 +46,7 @@ abstract class LazyMethodAbstract
             require_once $file;
 
             if (\function_exists($fn)) {
-                self::$exists .= '|' . $n;
+                self::$exists[static::NAMESPACE] .= '|' . $n;
                 return $fn(...$args);
             }
         }
@@ -54,15 +55,18 @@ abstract class LazyMethodAbstract
     }
 
     /**
+     * @internal
      * @param string|string[] $name
      */
     static function __include($name)
     {
+        self::$exists[static::NAMESPACE] ??= '';
+
         foreach ((array)$name as $n) {
             $n = static::ALIAS[$n] ?? $n;
-            if (\strpos(self::$exists . '|', '|' . $n . '|') === false) {
+            if (\strpos(self::$exists[static::NAMESPACE] . '|', '|' . $n . '|') === false) {
                 require_once(static::PATH_TO_DIR . '/' . $n . '.php');
-                self::$exists .= '|' . $n;
+                self::$exists[static::NAMESPACE] .= '|' . $n;
             }
         }
     }
