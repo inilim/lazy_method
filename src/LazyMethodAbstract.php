@@ -8,7 +8,10 @@ abstract class LazyMethodAbstract
         PATH_TO_DIR             = '',
         ALIAS                   = [];
 
-    protected static string $exists = '';
+    /**
+     * @var string
+     */
+    protected static $exists = '';
 
     /**
      * @internal desc
@@ -48,5 +51,19 @@ abstract class LazyMethodAbstract
         }
 
         throw new \RuntimeException('Call to undefined method ' . static::NAMESPACE . '\\' . $name);
+    }
+
+    /**
+     * @param string|string[] $name
+     */
+    static function __include($name)
+    {
+        foreach ((array)$name as $n) {
+            $n = static::ALIAS[$n] ?? $n;
+            if (\str_contains(self::$exists . '|', '|' . $n . '|')) {
+                require_once(static::PATH_TO_DIR . '/' . $n . '.php');
+                self::$exists .= '|' . $n;
+            }
+        }
     }
 }
