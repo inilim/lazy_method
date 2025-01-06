@@ -4,9 +4,9 @@ namespace Inilim\LazyMethod;
 
 abstract class LazyMethodAbstract
 {
-    protected const NAMESPACE   = '';
-    protected const PATH_TO_DIR = '';
-    protected const ALIAS       = [];
+    protected const NAMESPACE   = '',
+        PATH_TO_DIR             = '',
+        ALIAS                   = [];
 
     protected static string $exists = '';
 
