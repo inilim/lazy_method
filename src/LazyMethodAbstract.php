@@ -35,7 +35,7 @@ abstract class LazyMethodAbstract
         $n = static::ALIAS[$name] ?? $name;
         $fn = static::NAMESPACE . '\\' . $n;
 
-        if (\str_contains(self::$exists . '|', '|' . $n . '|')) {
+        if (\strpos(self::$exists . '|', '|' . $n . '|') !== false) {
             return $fn(...$args);
         }
 
@@ -60,7 +60,7 @@ abstract class LazyMethodAbstract
     {
         foreach ((array)$name as $n) {
             $n = static::ALIAS[$n] ?? $n;
-            if (\str_contains(self::$exists . '|', '|' . $n . '|')) {
+            if (\strpos(self::$exists . '|', '|' . $n . '|') === false) {
                 require_once(static::PATH_TO_DIR . '/' . $n . '.php');
                 self::$exists .= '|' . $n;
             }
