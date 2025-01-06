@@ -4,48 +4,66 @@ namespace Inilim\LazyMethod;
 
 abstract class LazyMethodAbstract
 {
-    protected const NAMESPACE = '';
-    protected const ALIAS     = [];
+    protected const NAMESPACE   = '',
+        PATH_TO_DIR             = '',
+        ALIAS                   = [];
+
     /**
-     * @var object[]|array{}
+     * @var string
      */
-    private static $instance = [];
+    protected static $exists = '';
 
     /**
      * @internal desc
      * @param string $name
-     * @param mixed[]|array{} $arguments
+     * @param mixed[]|array{} $args
      * @return mixed|void
      */
-    public function __call($name, $arguments)
+    function __call($name, $args)
     {
-        return self::__callStatic($name, $arguments);
+        return self::__callStatic($name, $args);
     }
 
     /**
      * @internal desc
      * @param string $name
-     * @param mixed[]|array{} $arguments
+     * @param mixed[]|array{} $args
      * @return mixed|void
      */
-    public static function __callStatic($name, $arguments)
+    static function __callStatic($name, $args)
     {
-        $class = static::NAMESPACE . '\\' . (static::ALIAS[$name] ?? \ucfirst($name));
+        $n = static::ALIAS[$name] ?? $name;
+        $fn = static::NAMESPACE . '\\' . $n;
 
-        if (isset(self::$instance[$class])) {
-            return self::getInstance($class)->__invoke(...$arguments);
-        } elseif (!\class_exists($class) && !\method_exists($class, '__invoke')) {
-            throw new \RuntimeException('Call to undefined method ' . static::NAMESPACE . '::' . $name);
+        if (\str_contains(self::$exists . '|', '|' . $n . '|')) {
+            return $fn(...$args);
         }
 
-        return self::getInstance($class)->__invoke(...$arguments);
+        $file = static::PATH_TO_DIR . '/' . $n . '.php';
+
+        if (\is_file($file)) {
+            require_once $file;
+
+            if (\function_exists($fn)) {
+                self::$exists .= '|' . $n;
+                return $fn(...$args);
+            }
+        }
+
+        throw new \RuntimeException('Call to undefined method ' . static::NAMESPACE . '\\' . $name);
     }
 
     /**
-     * @param class-string $class
+     * @param string|string[] $name
      */
-    private static function getInstance($class): object
+    static function __include($name)
     {
-        return self::$instance[$class] ??= new $class;
+        foreach ((array)$name as $n) {
+            $n = static::ALIAS[$n] ?? $n;
+            if (\str_contains(self::$exists . '|', '|' . $n . '|')) {
+                require_once(static::PATH_TO_DIR . '/' . $n . '.php');
+                self::$exists .= '|' . $n;
+            }
+        }
     }
 }
