@@ -34,19 +34,18 @@ abstract class LazyMethodAbstract
     {
         $n = static::ALIAS[$name] ?? $name;
         $fn = static::NAMESPACE . '\\' . $n;
-        self::$exists[static::NAMESPACE] ??= '';
 
-        if (\strpos(self::$exists[static::NAMESPACE] . '|', '|' . $n . '|') !== false) {
+        if (self::defined($n)) {
             return $fn(...$args);
         }
 
         $file = static::PATH_TO_DIR . '/' . $n . '.php';
 
         if (\is_file($file)) {
-            require_once $file;
+            require $file;
 
             if (\function_exists($fn)) {
-                self::$exists[static::NAMESPACE] .= '|' . $n;
+                self::$exists[static::NAMESPACE] .= ',' . $n;
                 return $fn(...$args);
             }
         }
@@ -60,14 +59,22 @@ abstract class LazyMethodAbstract
      */
     static function __include($name)
     {
-        self::$exists[static::NAMESPACE] ??= '';
-
         foreach ((array)$name as $n) {
             $n = static::ALIAS[$n] ?? $n;
-            if (\strpos(self::$exists[static::NAMESPACE] . '|', '|' . $n . '|') === false) {
-                require_once(static::PATH_TO_DIR . '/' . $n . '.php');
-                self::$exists[static::NAMESPACE] .= '|' . $n;
+            if (!self::defined($n)) {
+                require(static::PATH_TO_DIR . '/' . $n . '.php');
+                self::$exists[static::NAMESPACE] .= ',' . $n;
             }
         }
+    }
+
+    /**
+     * @internal
+     * @return bool
+     */
+    static function defined(string $name)
+    {
+        self::$exists[static::NAMESPACE] ??= '';
+        return \strpos(self::$exists[static::NAMESPACE] . ',', ',' . $name . ',') !== false;
     }
 }
